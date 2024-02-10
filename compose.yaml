@@ -4,15 +4,19 @@ services:
     build:
       context: ./backend
     ports:
-      - "8021:8021"
+      - "${BACKEND_PORT:-3021}:${BACKEND_PORT:-3021}"
     volumes:
       - ./backend:/app
+    env_file:
+      - .env
   frontend:
     build:
       context: ./frontend
     ports:
-      - "3021:3021"
+      - "${FRONTEND_PORT:-8021}:${FRONTEND_PORT:-8021}"
     command: sh -c "npm run dev"
     volumes:
       - ./frontend:/app
       - ./frontend/node_modules:/app/node_modules
+    env_file:
+      - .env

@@ -6,10 +6,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/kentyisapen/simple-drive/internal/application/service"
-	"github.com/kentyisapen/simple-drive/internal/application/usecase"
 	"github.com/kentyisapen/simple-drive/internal/interfraces/grpc/server"
-	"github.com/kentyisapen/simple-drive/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -27,16 +24,7 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-
-	// 依存性を解決
-	healthCheckUsecase := usecase.NewHealthCheckUsecase()
-	healthCheckService := service.NewHealthCheckService(healthCheckUsecase)
-
-	// 他のサービスやユースケースのインスタンスを作成
-
-	// FileManagerServerのインスタンスを作成し、すべての依存性を注入
-	fileManagerServer := server.NewFileManagerServer(healthCheckService /*, 他のサービスやユースケースのインスタンス */)
-	pb.RegisterFileManagerServer(grpcServer, fileManagerServer)
+	server.BootstrapServices(grpcServer)
 
 	if os.Getenv("ENV") != "PROD" {
 		reflection.Register(grpcServer)

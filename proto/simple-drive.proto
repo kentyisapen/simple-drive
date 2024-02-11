@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package filemanagement;
+package simpledrive;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
@@ -43,6 +43,13 @@ message ListItemsResponse {
   Paging paging = 2;
 }
 
+message HealthCheckRequest {
+}
+
+message HealthCheckResponse {
+  string status = 1;
+}
+
 message Paging {
   int32 current_page = 1;
   int32 page_size = 2;
@@ -57,6 +64,7 @@ enum ItemType {
 
 // サービス定義
 service FileManager {
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
   rpc ListItems(ListItemsRequest) returns (ListItemsResponse);
   rpc CreateItem(ItemCreateRequest) returns (Item);
   rpc GetItem(google.protobuf.StringValue) returns (Item);

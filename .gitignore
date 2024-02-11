@@ -3,4 +3,4 @@
 .secret
 
 backend/tmp/*
-backend/pb/*
+backend/internal/interfaces/rpc/pb/*

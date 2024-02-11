@@ -4,20 +4,22 @@ services:
     build:
       context: ./backend
     ports:
-      - "${BACKEND_PORT:-3021}:${BACKEND_PORT:-3021}"
+      - "${BACKEND_PORT:-8021}:${BACKEND_PORT:-8021}"
     volumes:
       - ./backend:/app
+      - ./proto:/proto
     env_file:
       - .env
   frontend:
     build:
       context: ./frontend
     ports:
-      - "${FRONTEND_PORT:-8021}:${FRONTEND_PORT:-8021}"
+      - "${FRONTEND_PORT:-3021}:${FRONTEND_PORT:-3021}"
     command: sh -c "npm run dev"
     volumes:
       - ./frontend:/app
       - ./frontend/node_modules:/app/node_modules
+      - ./proto:/proto
     env_file:
       - .env
   postgres:
@@ -36,3 +38,6 @@ services:
     ports:
       - "${MINIO_PORT:-9012}:${MINIO_PORT:-9012}"
       - "${MINIO_WEB_PORT:-9013}:${MINIO_WEB_PORT:-9013}"
+    volumes:
+      - ./.minio/data:/data
+      - ./.minio/config:/root/.minio

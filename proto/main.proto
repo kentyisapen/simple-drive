@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package filemanagement;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "./pb;pb";
+
+// メッセージ定義
+message Item {
+  string id = 1;
+  google.protobuf.StringValue parent_id = 2;
+  string name = 3;
+  ItemType type = 4;
+  google.protobuf.Int64Value size = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp last_modified_at = 7;
+  string minio_object_key = 8;
+}
+
+message ItemCreateRequest {
+  string name = 1;
+  ItemType type = 2;
+  google.protobuf.StringValue parent_id = 3;
+  bytes file = 4; // バイナリデータはbytes型で表現
+}
+
+message ItemUpdateRequest {
+  google.protobuf.StringValue name = 1;
+  google.protobuf.StringValue parent_id = 2;
+}
+
+message ListItemsRequest {
+  google.protobuf.StringValue parent_id = 1;
+  int32 page = 2;
+  int32 size = 3;
+}
+
+message ListItemsResponse {
+  repeated Item items = 1;
+  Paging paging = 2;
+}
+
+message Paging {
+  int32 current_page = 1;
+  int32 page_size = 2;
+  int64 total_items = 3;
+  int32 total_pages = 4;
+}
+
+enum ItemType {
+  FILE = 0;
+  DIRECTORY = 1;
+}
+
+// サービス定義
+service FileManager {
+  rpc ListItems(ListItemsRequest) returns (ListItemsResponse);
+  rpc CreateItem(ItemCreateRequest) returns (Item);
+  rpc GetItem(google.protobuf.StringValue) returns (Item);
+  rpc UpdateItem(ItemUpdateRequest) returns (Item);
+  rpc DeleteItem(google.protobuf.StringValue) returns (google.protobuf.Empty);
+}

@@ -28,8 +28,8 @@ func NewItemPostgresqlRepository(connectionString string) (repository.ItemPostgr
 }
 
 func (r *itemPostgresqlRepository) CreateItem(ctx context.Context, item model.Item) (model.Item, error) {
-	query := `INSERT INTO items (id, parent_id, name, type, size, created_at, last_modified_at) VALUES ($1, $2, $3, $4, $5, $6, $7)`
-	_, err := r.db.ExecContext(ctx, query, item.ID, item.ParentID, item.Name, item.Type, item.Size, item.CreatedAt, item.LastModifiedAt)
+	query := `INSERT INTO items (id, parent_id, name, type, size, created_at, last_modified_at, minio_object_key) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+	_, err := r.db.ExecContext(ctx, query, item.ID, item.ParentID, item.Name, item.Type, item.Size, item.CreatedAt, item.LastModifiedAt, item.MinioObjectKey)
 	if err != nil {
 		return model.Item{}, fmt.Errorf("error while inserting item into db: %w", err)
 	}

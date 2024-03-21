@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/kentyisapen/simple-drive/internal/interfraces/grpc/server"
+	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )

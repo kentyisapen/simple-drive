@@ -1,3 +1,4 @@
+// backend/internal/domain/model/Item.go
 package model
 
 import (

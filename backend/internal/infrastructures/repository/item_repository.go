@@ -13,5 +13,5 @@ type ItemPostgresRepository interface {
 }
 
 type ItemMinioRepository interface {
-	SaveContent(ctx context.Context, itemID uuid.UUID, content []byte) error
+	SaveContent(ctx context.Context, itemID uuid.UUID, content []byte) (string, error)
 }

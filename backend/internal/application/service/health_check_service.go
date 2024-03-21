@@ -1,7 +1,9 @@
 // internal/application/service/health_check_service.go
-package service
+package appservice
 
-import "github.com/kentyisapen/simple-drive/internal/application/usecase"
+import (
+	"github.com/kentyisapen/simple-drive/internal/application/usecase"
+)
 
 type HealthCheckService struct {
 	healthCheckUsecase *usecase.HealthCheckUsecase

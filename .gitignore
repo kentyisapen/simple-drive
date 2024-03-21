@@ -1,6 +1,7 @@
 .env
 .minio
 .secret
+.postgres_data
 
 backend/tmp/*
 backend/internal/interfaces/rpc/pb/*

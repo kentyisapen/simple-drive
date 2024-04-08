@@ -30,7 +30,7 @@ services:
       POSTGRES_PORT: "${POSTGRES_PORT:-5421}"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
-      POSTGRES_DB: "simple_drive" # 追加：使用するDB名を指定
+      POSTGRES_DB: "simple_drive"
     command: -p ${POSTGRES_PORT:-5421}
     volumes:
       - .postgres_data:/var/lib/postgresql/data

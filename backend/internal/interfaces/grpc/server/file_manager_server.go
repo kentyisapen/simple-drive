@@ -1,4 +1,4 @@
-// internal/interfraces/grpc/server/file_manager_server.go
+// internal/interfaces/grpc/server/file_manager_server.go
 package server
 
 import (

@@ -1,4 +1,4 @@
-// internal/interfraces/grpc/server/bootstrap.go
+// internal/interfaces/grpc/server/bootstrap.go
 package server
 
 import (

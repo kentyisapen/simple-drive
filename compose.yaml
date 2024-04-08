@@ -36,9 +36,8 @@ services:
       - .postgres_data:/var/lib/postgresql/data
   minio:
     image: quay.io/minio/minio:latest
-    environment:
-      MINIO_ROOT_USER: root
-      MINIO_ROOT_PASSWORD: password
+    env_file:
+      - .env
     command: server --console-address ":${MINIO_WEB_PORT:-9013}" /data
     ports:
       - "${MINIO_PORT:-9012}:${MINIO_PORT:-9012}"
@@ -46,3 +45,17 @@ services:
     volumes:
       - ./.minio/data:/data
       - ./.minio/config:/root/.minio
+  createbuckets:
+    environment:
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until (/usr/bin/mc config host add myminio http://${MINIO_ENDPOINT} ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY}) do echo '...waiting...' && sleep 1; done;
+      /usr/bin/mc mb myminio/images;
+      /usr/bin/mc policy download myminio/images;
+      exit 0;
+      "

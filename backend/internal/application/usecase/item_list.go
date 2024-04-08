@@ -3,7 +3,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/kentyisapen/simple-drive/internal/domain/repository"
 	"github.com/kentyisapen/simple-drive/pb"
@@ -21,11 +20,11 @@ func NewItemListUsecase(postgresRepo repository.ItemPostgresRepository) *ItemLis
 
 func (ilu *ItemListUsecase) Execute(ctx context.Context, parentID *string, page, size int32) (*pb.ListItemsResponse, error) {
 	if page <= 0 {
-		return nil, fmt.Errorf("invalid page number: %d. Page number must be greater than 0", page)
+		page = 1
 	}
 
 	if size <= 0 {
-		return nil, fmt.Errorf("invalid size: %d. Size must be greater than 0", size)
+		size = 20
 	}
 
 	items, err := ilu.postgresRepo.ListItems(ctx, parentID, page, size)

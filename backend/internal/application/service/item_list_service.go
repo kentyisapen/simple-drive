@@ -26,7 +26,6 @@ func (s *ItemListService) Execute(ctx context.Context, req *pb.ListItemsRequest)
 		parentID = &parentIDVal
 	}
 
-	// ItemListUsecase.Executeの戻り値は*pb.ListItemsResponseです
 	response, err := s.itemListUsecase.Execute(ctx, parentID, req.GetPage(), req.GetSize())
 	if err != nil {
 		return nil, err

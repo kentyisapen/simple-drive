@@ -1,4 +1,4 @@
-// cmd/tool/filename_inserter.go
+// scripts/update_go_file_headers.go
 package main
 
 import (

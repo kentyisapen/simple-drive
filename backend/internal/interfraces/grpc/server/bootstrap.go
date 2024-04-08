@@ -1,4 +1,4 @@
-// backend/internal/interfraces/grpc/server/bootstrap.go
+// internal/interfraces/grpc/server/bootstrap.go
 package server
 
 import (
@@ -48,8 +48,11 @@ func BootstrapServices(grpcServer *grpc.Server) error {
 	itemCreateUsecase := usecase.NewItemCreateUsecase(itemPostgresRepository, itemMinioRepository)
 	itemCreateService := appservice.NewItemCreateService(itemCreateUsecase)
 
+	itemListUsecase := usecase.NewItemListUsecase(itemPostgresRepository)
+	itemListService := appservice.NewItemListService(itemListUsecase)
+
 	// FileManagerServerのインスタンスを作成し、すべての依存性を注入
-	fileManagerServer := NewFileManagerServer(healthCheckService, itemCreateService)
+	fileManagerServer := NewFileManagerServer(healthCheckService, itemCreateService, itemListService)
 	pb.RegisterFileManagerServer(grpcServer, fileManagerServer)
 
 	return nil

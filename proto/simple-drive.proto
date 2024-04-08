@@ -17,7 +17,9 @@ message Item {
   google.protobuf.Int64Value size = 5;
   google.protobuf.Timestamp created_at = 6;
   google.protobuf.Timestamp last_modified_at = 7;
-  string minio_object_key = 8;
+  // string minio_object_key = 8;
+  reserved 8;
+  reserved "minio_object_key";
 }
 
 message ItemCreateRequest {

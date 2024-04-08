@@ -1,4 +1,4 @@
-// backend/internal/application/usecase/item_create.go
+// internal/application/usecase/item_create.go
 package usecase
 
 import (
@@ -8,7 +8,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/kentyisapen/simple-drive/internal/domain/model"
-	"github.com/kentyisapen/simple-drive/internal/infrastructures/repository" // repositoryパッケージをインポート
+	"github.com/kentyisapen/simple-drive/internal/domain/repository"
+
 	"github.com/kentyisapen/simple-drive/pb"
 )
 
@@ -53,7 +54,7 @@ func (icu *ItemCreateUsecase) Execute(ctx context.Context, req *pb.ItemCreateReq
 	}
 
 	itemID := uuid.New()
-	objectKey, err := icu.minioRepo.SaveContent(ctx, itemID, req.GetFile())
+	_, err := icu.minioRepo.SaveContent(ctx, itemID, req.GetFile())
 	if err != nil {
 		return model.Item{}, err
 	}
@@ -68,11 +69,14 @@ func (icu *ItemCreateUsecase) Execute(ctx context.Context, req *pb.ItemCreateReq
 		Size:           &size,
 		CreatedAt:      now,
 		LastModifiedAt: now,
-		MinioObjectKey: objectKey, // MinIOから返されたオブジェクトキー
 	}
 
 	savedItem, err := icu.postgresRepo.CreateItem(ctx, item)
 	if err != nil {
+		deleteErr := icu.minioRepo.DeleteContent(ctx, itemID.String())
+		if deleteErr != nil {
+			return model.Item{}, err
+		}
 		return model.Item{}, err
 	}
 	return savedItem, nil

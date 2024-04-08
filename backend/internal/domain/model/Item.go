@@ -1,4 +1,4 @@
-// backend/internal/domain/model/Item.go
+// internal/domain/model/Item.go
 package model
 
 import (
@@ -28,7 +28,6 @@ type Item struct {
 	Size           *int64     `db:"size"` // NULLを許容するためにポインタ型を使用
 	CreatedAt      time.Time  `db:"created_at"`
 	LastModifiedAt time.Time  `db:"last_modified_at"`
-	MinioObjectKey string     `db:"minio_object_key"`
 }
 
 // ToPB はItem構造体をpb.Itemメッセージに変換します。
@@ -45,6 +44,5 @@ func (i *Item) ToPB() *pb.Item {
 		Size:           wrapperspb.Int64(wrapperspb.Int64Value{Value: *i.Size}.Value),
 		CreatedAt:      timestamppb.New(i.CreatedAt),
 		LastModifiedAt: timestamppb.New(i.LastModifiedAt),
-		MinioObjectKey: i.MinioObjectKey,
 	}
 }

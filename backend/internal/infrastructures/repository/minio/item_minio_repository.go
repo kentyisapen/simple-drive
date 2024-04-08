@@ -1,4 +1,4 @@
-// backend/internal/infrastructures/repository/minio/item_minio_repository.go
+// internal/infrastructures/repository/minio/item_minio_repository.go
 package minio
 
 import (
@@ -9,7 +9,8 @@ import (
 	"os"
 
 	"github.com/google/uuid"
-	"github.com/kentyisapen/simple-drive/internal/infrastructures/repository"
+	"github.com/kentyisapen/simple-drive/internal/domain/repository"
+
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
@@ -39,4 +40,12 @@ func (r *itemMinioRepository) SaveContent(ctx context.Context, itemID uuid.UUID,
 		return "", fmt.Errorf("error while saving content to MinIO: %w", err)
 	}
 	return info.Key, nil
+}
+
+func (r *itemMinioRepository) DeleteContent(ctx context.Context, itemID string) error {
+	err := r.minioClient.RemoveObject(ctx, os.Getenv("MINIO_BUCKET_NAME"), itemID, minio.RemoveObjectOptions{})
+	if err != nil {
+		return fmt.Errorf("error while deleting content from MinIO: %w", err)
+	}
+	return nil
 }

@@ -15,8 +15,8 @@ type ItemType string
 
 // ItemType の定数です。
 const (
-	FileType      ItemType = "file"
-	DirectoryType ItemType = "directory"
+	FileType      ItemType = "FILE"
+	DirectoryType ItemType = "DIRECTORY"
 )
 
 // Item はアイテムを表すドメインモデルです。

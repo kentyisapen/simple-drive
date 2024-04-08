@@ -1,3 +1,4 @@
+// proto/simple-drive.proto
 syntax = "proto3";
 
 package simpledrive;

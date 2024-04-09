@@ -1,4 +1,4 @@
-FROM golang:1.21.5
+FROM golang:1.22
 WORKDIR /app
 RUN go install github.com/cosmtrek/air@latest && \
   go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \

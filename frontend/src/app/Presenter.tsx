@@ -1,25 +1,27 @@
-import React from 'react';
-import { Item, ListItemsResponse } from '../grpc/generated/simple-drive_pb';
+// src/app/Presenter.tsx
+"use client";
+import React from "react";
+import { ListItemsResponse } from "../grpc/generated/simple-drive_pb";
 
-type ItemListPresenterProps = {
-    items: ListItemsResponse.AsObject;
-    loading: boolean;
+type PresenterProps = {
+	items: ListItemsResponse.AsObject | null;
+	loading: boolean;
+	error: string | null;
 };
 
-const ItemListPresenter: React.FC<ItemListPresenterProps> = ({ items, loading }) => {
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+const Presenter: React.FC<PresenterProps> = ({ items, loading, error }) => {
+	if (loading) return <div>Loading...</div>;
+	if (error) return <div>Error: {error}</div>;
 
-    return (
-        <ul>
-            {items.itemsList.map((item) => (
-                <li key={item.id}>
-                    {item.name} - {item.type} - Created At: {item.createdAt?.seconds}
-                </li>
-            ))}
-        </ul>
-    );
+	return (
+		<div>
+			{items?.itemsList?.map((item, index) => (
+				<div key={index}>
+					{item.name} - {item.type} - {item.size.value}
+				</div>
+			))}
+		</div>
+	);
 };
 
-export default ItemListPresenter;
+export default Presenter;

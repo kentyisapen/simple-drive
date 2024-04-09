@@ -1,11 +1,11 @@
 // src/store/store.ts
-import { configureStore } from '@reduxjs/toolkit';
-import itemReducer from './itemSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import itemReducer from "./itemSlice";
 
 export const store = configureStore({
-    reducer: {
-        item: itemReducer, // itemSliceからexportされたreducerを使用
-    },
+	reducer: {
+		item: itemReducer, // itemSliceからexportされたreducerを使用
+	},
 });
 
 // ルートステートの型をエクスポート

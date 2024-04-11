@@ -1,11 +1,11 @@
 FROM golang:1.22
 WORKDIR /app
-RUN go install github.com/cosmtrek/air@latest && \
-  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
-  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+RUN go install github.com/cosmtrek/air@v1.51.0 && \
+  go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.33.0 && \
+  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0
 
 # protocのバージョンを指定
-ARG PROTOC_VER=3.19.1
+ARG PROTOC_VER=26.1
 
 # protocコンパイラをダウンロードして解凍し、バイナリを/usr/local/binに移動
 RUN apt-get update && apt-get install -y unzip && \

@@ -3,17 +3,21 @@ syntax = "proto3";
 
 package simpledrive;
 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
 option go_package = "./pb;pb";
 
 // メッセージ定義
 message Item {
   string id = 1;
-  optional string parent_id = 2;
+  google.protobuf.StringValue parent_id = 2;
   string name = 3;
   ItemType type = 4;
-  int32 size = 5;
-  string created_at = 6;
-  string last_modified_at = 7;
+  google.protobuf.Int64Value size = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp last_modified_at = 7;
   // string minio_object_key = 8;
   reserved 8;
   reserved "minio_object_key";
@@ -22,17 +26,17 @@ message Item {
 message ItemCreateRequest {
   string name = 1;
   ItemType type = 2;
-  optional string parent_id = 3;
+  google.protobuf.StringValue parent_id = 3;
   bytes file = 4; // バイナリデータはbytes型で表現
 }
 
 message ItemUpdateRequest {
-  string parent_id = 2;
-  optional string name = 1;
+  google.protobuf.StringValue name = 1;
+  google.protobuf.StringValue parent_id = 2;
 }
 
 message ListItemsRequest {
-  optional string parent_id = 1;
+  google.protobuf.StringValue parent_id = 1;
   int32 page = 2;
   int32 size = 3;
 }
@@ -40,17 +44,6 @@ message ListItemsRequest {
 message ListItemsResponse {
   repeated Item items = 1;
   Paging paging = 2;
-}
-
-message GetItemRequest {
-  string id = 1;
-}
-
-message DeleteItemRequest {
-  string id = 1;
-}
-
-message DeleteItemResponse {
 }
 
 message HealthCheckRequest {
@@ -63,7 +56,7 @@ message HealthCheckResponse {
 message Paging {
   int32 current_page = 1;
   int32 page_size = 2;
-  int32 total_items = 3;
+  int64 total_items = 3;
   int32 total_pages = 4;
 }
 
@@ -77,7 +70,7 @@ service FileManager {
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
   rpc ListItems(ListItemsRequest) returns (ListItemsResponse);
   rpc CreateItem(ItemCreateRequest) returns (Item);
-  rpc GetItem(GetItemRequest) returns (Item);
+  rpc GetItem(google.protobuf.StringValue) returns (Item);
   rpc UpdateItem(ItemUpdateRequest) returns (Item);
-  rpc DeleteItem(DeleteItemRequest) returns (DeleteItemResponse);
+  rpc DeleteItem(google.protobuf.StringValue) returns (google.protobuf.Empty);
 }

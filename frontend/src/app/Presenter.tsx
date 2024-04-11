@@ -17,7 +17,7 @@ const Presenter: React.FC<PresenterProps> = ({ items, loading, error }) => {
 		<div>
 			{items?.itemsList?.map((item, index) => (
 				<div key={index}>
-					{item.name} - {item.type} - {item.size.value}
+					{item.name} - {item.type} - {item.size?.value}
 				</div>
 			))}
 		</div>

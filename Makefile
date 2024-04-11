@@ -1,6 +1,8 @@
+.PHONY: backend-gen-proto
 backend-gen-proto:
 	docker compose exec backend sh -c "protoc -I /proto --go_out=. --go-grpc_out=. /proto/*.proto"
 
+.PHONY: frontend-gen-proto
 frontend-gen-proto:
 	docker compose exec frontend sh -c "\
 	rm -rf /app/src/grpc/generated && mkdir -p /app/src/grpc/generated; \
@@ -13,5 +15,6 @@ frontend-gen-proto:
 	/proto/*.proto\
 	"
 
+.PHONY: backend-go-mod-tidy
 backend-go-mod-tidy:
 	docker-compose exec backend sh -c "go mod tidy"

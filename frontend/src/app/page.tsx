@@ -8,7 +8,6 @@ const Page = () => {
 	return (
 		<Provider store={store}>
 			<div>
-				<h1>Item List</h1>
 				<Container />
 			</div>
 		</Provider>

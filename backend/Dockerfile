@@ -15,4 +15,6 @@ RUN apt-get update && apt-get install -y unzip imagemagick && \
 
 COPY policy.xml /etc/ImageMagick-6/policy.xml
 
+RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
 CMD ["air"]

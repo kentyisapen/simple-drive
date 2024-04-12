@@ -17,4 +17,4 @@ frontend-gen-proto:
 
 .PHONY: backend-go-mod-tidy
 backend-go-mod-tidy:
-	docker-compose exec backend sh -c "go mod tidy"
+	docker compose exec backend sh -c "go mod tidy"

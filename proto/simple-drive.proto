@@ -21,6 +21,7 @@ message Item {
   // string minio_object_key = 8;
   reserved 8;
   reserved "minio_object_key";
+  string thumbnail_id = 9;
 }
 
 message ItemCreateRequest {
@@ -46,12 +47,9 @@ message ListItemsResponse {
   Paging paging = 2;
 }
 
-message HealthCheckRequest {
-}
+message HealthCheckRequest {}
 
-message HealthCheckResponse {
-  string status = 1;
-}
+message HealthCheckResponse { string status = 1; }
 
 message Paging {
   int32 current_page = 1;

@@ -8,9 +8,11 @@ RUN go install github.com/cosmtrek/air@v1.51.0 && \
 ARG PROTOC_VER=26.1
 
 # protocコンパイラをダウンロードして解凍し、バイナリを/usr/local/binに移動
-RUN apt-get update && apt-get install -y unzip && \
+RUN apt-get update && apt-get install -y unzip imagemagick && \
   curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/protoc-${PROTOC_VER}-linux-x86_64.zip && \
   unzip protoc-${PROTOC_VER}-linux-x86_64.zip -d /usr/local && \
   rm protoc-${PROTOC_VER}-linux-x86_64.zip
+
+COPY policy.xml /etc/ImageMagick-6/policy.xml
 
 CMD ["air"]

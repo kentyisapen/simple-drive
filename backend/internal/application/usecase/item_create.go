@@ -4,6 +4,10 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -47,7 +51,6 @@ func (icu *ItemCreateUsecase) Execute(ctx context.Context, req *pb.ItemCreateReq
 			// エラー処理（無効なUUID形式が渡された場合）
 		}
 	}
-
 	// ファイルの内容を保存する前に、req.GetFile() が nil でないことを確認します。
 	if req.GetFile() == nil {
 		return model.Item{}, fmt.Errorf("file content is nil")
@@ -55,6 +58,12 @@ func (icu *ItemCreateUsecase) Execute(ctx context.Context, req *pb.ItemCreateReq
 
 	itemID := uuid.New()
 	_, err := icu.minioRepo.SaveContent(ctx, itemID, req.GetFile())
+	if err != nil {
+		return model.Item{}, err
+	}
+
+	thumbnailID := uuid.New()
+	_, err = createThumbnailFromBinary(thumbnailID, req.GetFile())
 	if err != nil {
 		return model.Item{}, err
 	}
@@ -80,4 +89,39 @@ func (icu *ItemCreateUsecase) Execute(ctx context.Context, req *pb.ItemCreateReq
 		return model.Item{}, err
 	}
 	return savedItem, nil
+}
+
+func createThumbnailFromBinary(thumbnailID uuid.UUID, data []byte) (uuid.UUID, error) {
+	mimeType := http.DetectContentType(data)
+	var nullUUID uuid.NullUUID
+	if mimeType != "application/pdf" && !strings.HasPrefix(mimeType, "image/") {
+		return nullUUID.UUID, fmt.Errorf("unsupported file type: %s", mimeType)
+	}
+
+	tmpFile, err := os.CreateTemp("", "source")
+	if err != nil {
+		return nullUUID.UUID, err
+	}
+	defer tmpFile.Close()
+	defer os.Remove(tmpFile.Name())
+
+	if _, err := tmpFile.Write(data); err != nil {
+		return nullUUID.UUID, err
+	}
+
+	outputFileName := thumbnailID.String() + ".webp"
+
+	outputFilePath := "tmp/" + outputFileName
+
+	inputFilePath := tmpFile.Name()
+	if mimeType == "application/pdf" {
+		inputFilePath += "[0]"
+	}
+
+	cmd := exec.Command("convert", inputFilePath, "-resize", "420x", "-background", "white", "-alpha", "remove", outputFilePath)
+	if err := cmd.Run(); err != nil {
+		return nullUUID.UUID, err
+	}
+
+	return thumbnailID, nil
 }

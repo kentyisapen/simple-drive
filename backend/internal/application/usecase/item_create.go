@@ -42,7 +42,8 @@ func (icu *ItemCreateUsecase) Execute(ctx context.Context, req *pb.ItemCreateReq
 func (icu *ItemCreateUsecase) handleItemAndThumbnailCreation(ctx context.Context, req *pb.ItemCreateRequest, parentUuid uuid.UUID) (uuid.UUID, uuid.UUID, model.Item, error) {
 	itemID := uuid.New()
 	var nullUUID uuid.NullUUID
-	if err := icu.saveFileContent(ctx, itemID, req.GetFile()); err != nil {
+	_, err := icu.minioRepo.SaveContent(ctx, itemID, req.GetFile())
+	if err != nil {
 		return itemID, nullUUID.UUID, model.Item{}, err
 	}
 
@@ -64,7 +65,7 @@ func (icu *ItemCreateUsecase) handleItemAndThumbnailCreation(ctx context.Context
 		LastModifiedAt: now,
 	}
 
-	savedItem, err := icu.saveItemToDatabase(ctx, item)
+	savedItem, err := icu.postgresRepo.CreateItem(ctx, item)
 	if err != nil {
 		return itemID, thumbnailID, model.Item{}, err
 	}
@@ -113,15 +114,6 @@ func (icu *ItemCreateUsecase) createThumbnailFromBinary(ctx context.Context, dat
 	}
 
 	return thumbnailID, nil
-}
-
-func (icu *ItemCreateUsecase) saveFileContent(ctx context.Context, itemID uuid.UUID, fileContent []byte) error {
-	_, err := icu.minioRepo.SaveContent(ctx, itemID, fileContent)
-	return err
-}
-
-func (icu *ItemCreateUsecase) saveItemToDatabase(ctx context.Context, item model.Item) (model.Item, error) {
-	return icu.postgresRepo.CreateItem(ctx, item)
 }
 
 func (icu *ItemCreateUsecase) cleanupOnError(ctx context.Context, itemID string, thumbnailID string) {

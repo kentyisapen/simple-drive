@@ -12,7 +12,7 @@ option go_package = "./pb;pb";
 // メッセージ定義
 message Item {
   string id = 1;
-  google.protobuf.StringValue parent_id = 2;
+  string parent_id = 2;
   string name = 3;
   ItemType type = 4;
   google.protobuf.Int64Value size = 5;
@@ -27,13 +27,13 @@ message Item {
 message ItemCreateRequest {
   string name = 1;
   ItemType type = 2;
-  google.protobuf.StringValue parent_id = 3;
+  string parent_id = 3;
   bytes file = 4; // バイナリデータはbytes型で表現
 }
 
 message ItemUpdateRequest {
   google.protobuf.StringValue name = 1;
-  google.protobuf.StringValue parent_id = 2;
+  string parent_id = 2;
 }
 
 message ListItemsRequest {

@@ -21,25 +21,21 @@ const (
 
 // Item はアイテムを表すドメインモデルです。
 type Item struct {
-	ID             uuid.UUID  `db:"id"`
-	ParentID       *uuid.UUID `db:"parent_id"` // NULLを許容するためにポインタ型を使用
-	ThumbnailId    uuid.UUID  `db:"thumbnail_id"`
-	Name           string     `db:"name"`
-	Type           ItemType   `db:"type"`
-	Size           *int64     `db:"size"` // NULLを許容するためにポインタ型を使用
-	CreatedAt      time.Time  `db:"created_at"`
-	LastModifiedAt time.Time  `db:"last_modified_at"`
+	ID             uuid.UUID `db:"id"`
+	ParentID       uuid.UUID `db:"parent_id"` // NULLを許容するためにポインタ型を使用
+	ThumbnailId    uuid.UUID `db:"thumbnail_id"`
+	Name           string    `db:"name"`
+	Type           ItemType  `db:"type"`
+	Size           *int64    `db:"size"` // NULLを許容するためにポインタ型を使用
+	CreatedAt      time.Time `db:"created_at"`
+	LastModifiedAt time.Time `db:"last_modified_at"`
 }
 
 // ToPB はItem構造体をpb.Itemメッセージに変換します。
 func (i *Item) ToPB() *pb.Item {
-	parentId := ""
-	if i.ParentID != nil {
-		parentId = i.ParentID.String()
-	}
 	return &pb.Item{
 		Id:             i.ID.String(),
-		ParentId:       wrapperspb.String(parentId),
+		ParentId:       i.ParentID.String(),
 		ThumbnailId:    i.ThumbnailId.String(),
 		Name:           i.Name,
 		Type:           pb.ItemType(pb.ItemType_value[string(i.Type)]), // 型変換が必要になる場合があります

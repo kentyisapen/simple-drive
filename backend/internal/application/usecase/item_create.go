@@ -29,7 +29,7 @@ func NewItemCreateUsecase(postgresRepo repository.ItemPostgresRepository, minioR
 	}
 }
 
-func (icu *ItemCreateUsecase) Execute(ctx context.Context, req *pb.ItemCreateRequest, parentUuid *uuid.UUID) (model.Item, error) {
+func (icu *ItemCreateUsecase) Execute(ctx context.Context, req *pb.ItemCreateRequest, parentUuid uuid.UUID) (model.Item, error) {
 	itemID, thumbnailID, savedItem, err := icu.handleItemAndThumbnailCreation(ctx, req, parentUuid)
 	if err != nil {
 		icu.cleanupOnError(ctx, itemID.String(), thumbnailID.String())
@@ -39,7 +39,7 @@ func (icu *ItemCreateUsecase) Execute(ctx context.Context, req *pb.ItemCreateReq
 	return savedItem, nil
 }
 
-func (icu *ItemCreateUsecase) handleItemAndThumbnailCreation(ctx context.Context, req *pb.ItemCreateRequest, parentUuid *uuid.UUID) (uuid.UUID, uuid.UUID, model.Item, error) {
+func (icu *ItemCreateUsecase) handleItemAndThumbnailCreation(ctx context.Context, req *pb.ItemCreateRequest, parentUuid uuid.UUID) (uuid.UUID, uuid.UUID, model.Item, error) {
 	itemID := uuid.New()
 	var nullUUID uuid.NullUUID
 	if err := icu.saveFileContent(ctx, itemID, req.GetFile()); err != nil {

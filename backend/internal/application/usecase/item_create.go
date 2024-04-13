@@ -1,9 +1,10 @@
 // internal/application/usecase/item_create.go
+
 package usecase
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -13,13 +14,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/kentyisapen/simple-drive/internal/domain/model"
 	"github.com/kentyisapen/simple-drive/internal/domain/repository"
-
 	"github.com/kentyisapen/simple-drive/pb"
 )
 
 type ItemCreateUsecase struct {
-	postgresRepo repository.ItemPostgresRepository // ItemPostgresRepositoryを使用
-	minioRepo    repository.ItemMinioRepository    // ItemMinioRepositoryを使用
+	postgresRepo repository.ItemPostgresRepository
+	minioRepo    repository.ItemMinioRepository
 }
 
 func NewItemCreateUsecase(postgresRepo repository.ItemPostgresRepository, minioRepo repository.ItemMinioRepository) *ItemCreateUsecase {
@@ -29,50 +29,34 @@ func NewItemCreateUsecase(postgresRepo repository.ItemPostgresRepository, minioR
 	}
 }
 
-func (icu *ItemCreateUsecase) Execute(ctx context.Context, req *pb.ItemCreateRequest) (model.Item, error) {
-	if icu.postgresRepo == nil {
-		return model.Item{}, fmt.Errorf("postgres repository is nil")
+func (icu *ItemCreateUsecase) Execute(ctx context.Context, req *pb.ItemCreateRequest, parentUuid *uuid.UUID) (model.Item, error) {
+	itemID, thumbnailID, savedItem, err := icu.handleItemAndThumbnailCreation(ctx, req, parentUuid)
+	if err != nil {
+		icu.cleanupOnError(ctx, itemID.String(), thumbnailID.String())
+		return model.Item{}, err
 	}
 
-	if icu.minioRepo == nil {
-		return model.Item{}, fmt.Errorf("minio repository is nil")
-	}
+	return savedItem, nil
+}
 
-	if req == nil {
-		return model.Item{}, fmt.Errorf("request is nil")
-	}
-
-	var tempUuid *uuid.UUID = nil
-	if req.GetParentId() != nil && req.GetParentId().Value != "" {
-		parsedUuid, err := uuid.Parse(req.GetParentId().Value)
-		if err == nil {
-			tempUuid = &parsedUuid
-		} else {
-			// エラー処理（無効なUUID形式が渡された場合）
-		}
-	}
-	// ファイルの内容を保存する前に、req.GetFile() が nil でないことを確認します。
-	if req.GetFile() == nil {
-		return model.Item{}, fmt.Errorf("file content is nil")
-	}
-
+func (icu *ItemCreateUsecase) handleItemAndThumbnailCreation(ctx context.Context, req *pb.ItemCreateRequest, parentUuid *uuid.UUID) (uuid.UUID, uuid.UUID, model.Item, error) {
 	itemID := uuid.New()
-	_, err := icu.minioRepo.SaveContent(ctx, itemID, req.GetFile())
-	if err != nil {
-		return model.Item{}, err
+	var nullUUID uuid.NullUUID
+	if err := icu.saveFileContent(ctx, itemID, req.GetFile()); err != nil {
+		return itemID, nullUUID.UUID, model.Item{}, err
 	}
 
-	thumbnailID := uuid.New()
-	_, err = createThumbnailFromBinary(thumbnailID, req.GetFile())
+	thumbnailID, err := icu.createThumbnailFromBinary(ctx, req.GetFile())
 	if err != nil {
-		return model.Item{}, err
+		return itemID, thumbnailID, model.Item{}, err
 	}
 
 	now := time.Now()
 	size := int64(len(req.GetFile()))
 	item := model.Item{
 		ID:             itemID,
-		ParentID:       tempUuid,
+		ParentID:       parentUuid,
+		ThumbnailId:    thumbnailID,
 		Name:           req.GetName(),
 		Type:           model.FileType,
 		Size:           &size,
@@ -80,39 +64,34 @@ func (icu *ItemCreateUsecase) Execute(ctx context.Context, req *pb.ItemCreateReq
 		LastModifiedAt: now,
 	}
 
-	savedItem, err := icu.postgresRepo.CreateItem(ctx, item)
+	savedItem, err := icu.saveItemToDatabase(ctx, item)
 	if err != nil {
-		deleteErr := icu.minioRepo.DeleteContent(ctx, itemID.String())
-		if deleteErr != nil {
-			return model.Item{}, err
-		}
-		return model.Item{}, err
+		return itemID, thumbnailID, model.Item{}, err
 	}
-	return savedItem, nil
+
+	return itemID, thumbnailID, savedItem, nil
 }
 
-func createThumbnailFromBinary(thumbnailID uuid.UUID, data []byte) (uuid.UUID, error) {
+func (icu *ItemCreateUsecase) createThumbnailFromBinary(ctx context.Context, data []byte) (uuid.UUID, error) {
+	var thumbnailID = uuid.New()
 	mimeType := http.DetectContentType(data)
-	var nullUUID uuid.NullUUID
 	if mimeType != "application/pdf" && !strings.HasPrefix(mimeType, "image/") {
-		return nullUUID.UUID, fmt.Errorf("unsupported file type: %s", mimeType)
+		return uuid.Nil, nil
 	}
 
 	tmpFile, err := os.CreateTemp("", "source")
 	if err != nil {
-		return nullUUID.UUID, err
+		return uuid.Nil, err
 	}
 	defer tmpFile.Close()
 	defer os.Remove(tmpFile.Name())
 
 	if _, err := tmpFile.Write(data); err != nil {
-		return nullUUID.UUID, err
+		return uuid.Nil, err
 	}
 
 	outputFileName := thumbnailID.String() + ".webp"
-
 	outputFilePath := "tmp/" + outputFileName
-
 	inputFilePath := tmpFile.Name()
 	if mimeType == "application/pdf" {
 		inputFilePath += "[0]"
@@ -120,8 +99,36 @@ func createThumbnailFromBinary(thumbnailID uuid.UUID, data []byte) (uuid.UUID, e
 
 	cmd := exec.Command("convert", inputFilePath, "-resize", "420x", "-background", "white", "-alpha", "remove", outputFilePath)
 	if err := cmd.Run(); err != nil {
-		return nullUUID.UUID, err
+		return uuid.Nil, err
+	}
+	defer os.Remove(outputFilePath)
+
+	bin, err := os.ReadFile(outputFilePath)
+	if err != nil {
+		return uuid.Nil, err
+	}
+	_, err = icu.minioRepo.SaveContent(ctx, thumbnailID, bin)
+	if err != nil {
+		return uuid.Nil, err
 	}
 
 	return thumbnailID, nil
+}
+
+func (icu *ItemCreateUsecase) saveFileContent(ctx context.Context, itemID uuid.UUID, fileContent []byte) error {
+	_, err := icu.minioRepo.SaveContent(ctx, itemID, fileContent)
+	return err
+}
+
+func (icu *ItemCreateUsecase) saveItemToDatabase(ctx context.Context, item model.Item) (model.Item, error) {
+	return icu.postgresRepo.CreateItem(ctx, item)
+}
+
+func (icu *ItemCreateUsecase) cleanupOnError(ctx context.Context, itemID string, thumbnailID string) {
+	if delErr := icu.minioRepo.DeleteContent(ctx, itemID); delErr != nil {
+		log.Fatal(delErr)
+	}
+	if delErr := icu.minioRepo.DeleteContent(ctx, thumbnailID); delErr != nil {
+		log.Fatal(delErr)
+	}
 }

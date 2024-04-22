@@ -38,8 +38,9 @@ services:
     image: quay.io/minio/minio:latest
     env_file:
       - .env
-    command: server --console-address ":${MINIO_WEB_PORT:-9013}" /data
+    command: server --console-address ":${MINIO_WEB_PORT:-9013}" /data 
     ports:
+      - "9000:9000"
       - "${MINIO_PORT:-9012}:${MINIO_PORT:-9012}"
       - "${MINIO_WEB_PORT:-9013}:${MINIO_WEB_PORT:-9013}"
     volumes:
@@ -56,6 +57,6 @@ services:
       /bin/sh -c "
       until (/usr/bin/mc config host add myminio http://${MINIO_ENDPOINT} ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY}) do echo '...waiting...' && sleep 1; done;
       /usr/bin/mc mb myminio/images;
-      /usr/bin/mc policy download myminio/images;
+      /usr/bin/mc anonymous set public myminio/images;
       exit 0;
       "

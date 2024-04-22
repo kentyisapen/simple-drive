@@ -10,10 +10,8 @@ export class Item extends jspb.Message {
   getId(): string;
   setId(value: string): void;
 
-  hasParentId(): boolean;
-  clearParentId(): void;
-  getParentId(): google_protobuf_wrappers_pb.StringValue | undefined;
-  setParentId(value?: google_protobuf_wrappers_pb.StringValue): void;
+  getParentId(): string;
+  setParentId(value: string): void;
 
   getName(): string;
   setName(value: string): void;
@@ -36,6 +34,9 @@ export class Item extends jspb.Message {
   getLastModifiedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
   setLastModifiedAt(value?: google_protobuf_timestamp_pb.Timestamp): void;
 
+  getThumbnailId(): string;
+  setThumbnailId(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Item.AsObject;
   static toObject(includeInstance: boolean, msg: Item): Item.AsObject;
@@ -49,12 +50,13 @@ export class Item extends jspb.Message {
 export namespace Item {
   export type AsObject = {
     id: string,
-    parentId?: google_protobuf_wrappers_pb.StringValue.AsObject,
+    parentId: string,
     name: string,
     type: ItemTypeMap[keyof ItemTypeMap],
     size?: google_protobuf_wrappers_pb.Int64Value.AsObject,
     createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     lastModifiedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
+    thumbnailId: string,
   }
 }
 
@@ -65,10 +67,8 @@ export class ItemCreateRequest extends jspb.Message {
   getType(): ItemTypeMap[keyof ItemTypeMap];
   setType(value: ItemTypeMap[keyof ItemTypeMap]): void;
 
-  hasParentId(): boolean;
-  clearParentId(): void;
-  getParentId(): google_protobuf_wrappers_pb.StringValue | undefined;
-  setParentId(value?: google_protobuf_wrappers_pb.StringValue): void;
+  getParentId(): string;
+  setParentId(value: string): void;
 
   getFile(): Uint8Array | string;
   getFile_asU8(): Uint8Array;
@@ -89,7 +89,7 @@ export namespace ItemCreateRequest {
   export type AsObject = {
     name: string,
     type: ItemTypeMap[keyof ItemTypeMap],
-    parentId?: google_protobuf_wrappers_pb.StringValue.AsObject,
+    parentId: string,
     file: Uint8Array | string,
   }
 }
@@ -100,10 +100,8 @@ export class ItemUpdateRequest extends jspb.Message {
   getName(): google_protobuf_wrappers_pb.StringValue | undefined;
   setName(value?: google_protobuf_wrappers_pb.StringValue): void;
 
-  hasParentId(): boolean;
-  clearParentId(): void;
-  getParentId(): google_protobuf_wrappers_pb.StringValue | undefined;
-  setParentId(value?: google_protobuf_wrappers_pb.StringValue): void;
+  getParentId(): string;
+  setParentId(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ItemUpdateRequest.AsObject;
@@ -118,7 +116,7 @@ export class ItemUpdateRequest extends jspb.Message {
 export namespace ItemUpdateRequest {
   export type AsObject = {
     name?: google_protobuf_wrappers_pb.StringValue.AsObject,
-    parentId?: google_protobuf_wrappers_pb.StringValue.AsObject,
+    parentId: string,
   }
 }
 

@@ -4,6 +4,7 @@ package appservice
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/kentyisapen/simple-drive/internal/application/usecase"
 	"github.com/kentyisapen/simple-drive/pb"
 )
@@ -20,13 +21,13 @@ func NewItemListService(itemListUsecase *usecase.ItemListUsecase) *ItemListServi
 
 func (s *ItemListService) Execute(ctx context.Context, req *pb.ListItemsRequest) (*pb.ListItemsResponse, error) {
 
-	var parentID *string
-	if req.GetParentId() != nil {
-		parentIDVal := req.GetParentId().GetValue()
-		parentID = &parentIDVal
+	var parentId = uuid.Nil
+	parsed, err := uuid.Parse(req.GetParentId())
+	if err == nil {
+		parentId = parsed
 	}
 
-	response, err := s.itemListUsecase.Execute(ctx, parentID, req.GetPage(), req.GetSize())
+	response, err := s.itemListUsecase.Execute(ctx, parentId, req.GetPage(), req.GetSize())
 	if err != nil {
 		return nil, err
 	}

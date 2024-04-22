@@ -4,6 +4,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/kentyisapen/simple-drive/internal/domain/repository"
 	"github.com/kentyisapen/simple-drive/pb"
 )
@@ -18,7 +19,7 @@ func NewItemListUsecase(postgresRepo repository.ItemPostgresRepository) *ItemLis
 	}
 }
 
-func (ilu *ItemListUsecase) Execute(ctx context.Context, parentID *string, page, size int32) (*pb.ListItemsResponse, error) {
+func (ilu *ItemListUsecase) Execute(ctx context.Context, parentId uuid.UUID, page, size int32) (*pb.ListItemsResponse, error) {
 	if page <= 0 {
 		page = 1
 	}
@@ -27,12 +28,12 @@ func (ilu *ItemListUsecase) Execute(ctx context.Context, parentID *string, page,
 		size = 20
 	}
 
-	items, err := ilu.postgresRepo.ListItems(ctx, parentID, page, size)
+	items, err := ilu.postgresRepo.ListItems(ctx, parentId.String(), page, size)
 	if err != nil {
 		return nil, err
 	}
 
-	totalItems, err := ilu.postgresRepo.CountItems(ctx, parentID)
+	totalItems, err := ilu.postgresRepo.CountItems(ctx, parentId.String())
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +45,7 @@ func (ilu *ItemListUsecase) Execute(ctx context.Context, parentID *string, page,
 
 	pbItems := make([]*pb.Item, len(items))
 	for i, item := range items {
-		pbItems[i] = item.ToPB() // 仮のメソッドです。実際の変換ロジックに置き換えてください。
+		pbItems[i] = item.ToPB()
 	}
 
 	response := &pb.ListItemsResponse{

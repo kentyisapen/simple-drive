@@ -10,8 +10,8 @@ import (
 
 type ItemPostgresRepository interface {
 	CreateItem(ctx context.Context, item model.Item) (model.Item, error)
-	ListItems(ctx context.Context, parentID *string, page, size int32) ([]model.Item, error)
-	CountItems(ctx context.Context, parentID *string) (int64, error)
+	ListItems(ctx context.Context, parentID string, page, size int32) ([]model.Item, error)
+	CountItems(ctx context.Context, parentID string) (int64, error)
 }
 
 type ItemMinioRepository interface {

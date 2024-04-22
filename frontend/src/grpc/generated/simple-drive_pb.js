@@ -237,12 +237,13 @@ proto.simpledrive.Item.prototype.toObject = function(opt_includeInstance) {
 proto.simpledrive.Item.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    parentId: (f = msg.getParentId()) && google_protobuf_wrappers_pb.StringValue.toObject(includeInstance, f),
+    parentId: jspb.Message.getFieldWithDefault(msg, 2, ""),
     name: jspb.Message.getFieldWithDefault(msg, 3, ""),
     type: jspb.Message.getFieldWithDefault(msg, 4, 0),
     size: (f = msg.getSize()) && google_protobuf_wrappers_pb.Int64Value.toObject(includeInstance, f),
     createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    lastModifiedAt: (f = msg.getLastModifiedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    lastModifiedAt: (f = msg.getLastModifiedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
+    thumbnailId: jspb.Message.getFieldWithDefault(msg, 9, "")
   };
 
   if (includeInstance) {
@@ -284,8 +285,7 @@ proto.simpledrive.Item.deserializeBinaryFromReader = function(msg, reader) {
       msg.setId(value);
       break;
     case 2:
-      var value = new google_protobuf_wrappers_pb.StringValue;
-      reader.readMessage(value,google_protobuf_wrappers_pb.StringValue.deserializeBinaryFromReader);
+      var value = /** @type {string} */ (reader.readString());
       msg.setParentId(value);
       break;
     case 3:
@@ -310,6 +310,10 @@ proto.simpledrive.Item.deserializeBinaryFromReader = function(msg, reader) {
       var value = new google_protobuf_timestamp_pb.Timestamp;
       reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
       msg.setLastModifiedAt(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setThumbnailId(value);
       break;
     default:
       reader.skipField();
@@ -348,11 +352,10 @@ proto.simpledrive.Item.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getParentId();
-  if (f != null) {
-    writer.writeMessage(
+  if (f.length > 0) {
+    writer.writeString(
       2,
-      f,
-      google_protobuf_wrappers_pb.StringValue.serializeBinaryToWriter
+      f
     );
   }
   f = message.getName();
@@ -393,6 +396,13 @@ proto.simpledrive.Item.serializeBinaryToWriter = function(message, writer) {
       google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
     );
   }
+  f = message.getThumbnailId();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
+      f
+    );
+  }
 };
 
 
@@ -415,39 +425,20 @@ proto.simpledrive.Item.prototype.setId = function(value) {
 
 
 /**
- * optional google.protobuf.StringValue parent_id = 2;
- * @return {?proto.google.protobuf.StringValue}
+ * optional string parent_id = 2;
+ * @return {string}
  */
 proto.simpledrive.Item.prototype.getParentId = function() {
-  return /** @type{?proto.google.protobuf.StringValue} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_wrappers_pb.StringValue, 2));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * @param {?proto.google.protobuf.StringValue|undefined} value
+ * @param {string} value
  * @return {!proto.simpledrive.Item} returns this
-*/
+ */
 proto.simpledrive.Item.prototype.setParentId = function(value) {
-  return jspb.Message.setWrapperField(this, 2, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.simpledrive.Item} returns this
- */
-proto.simpledrive.Item.prototype.clearParentId = function() {
-  return this.setParentId(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.simpledrive.Item.prototype.hasParentId = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -598,6 +589,24 @@ proto.simpledrive.Item.prototype.hasLastModifiedAt = function() {
 };
 
 
+/**
+ * optional string thumbnail_id = 9;
+ * @return {string}
+ */
+proto.simpledrive.Item.prototype.getThumbnailId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.simpledrive.Item} returns this
+ */
+proto.simpledrive.Item.prototype.setThumbnailId = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
+};
+
+
 
 
 
@@ -632,7 +641,7 @@ proto.simpledrive.ItemCreateRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     type: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    parentId: (f = msg.getParentId()) && google_protobuf_wrappers_pb.StringValue.toObject(includeInstance, f),
+    parentId: jspb.Message.getFieldWithDefault(msg, 3, ""),
     file: msg.getFile_asB64()
   };
 
@@ -679,8 +688,7 @@ proto.simpledrive.ItemCreateRequest.deserializeBinaryFromReader = function(msg, 
       msg.setType(value);
       break;
     case 3:
-      var value = new google_protobuf_wrappers_pb.StringValue;
-      reader.readMessage(value,google_protobuf_wrappers_pb.StringValue.deserializeBinaryFromReader);
+      var value = /** @type {string} */ (reader.readString());
       msg.setParentId(value);
       break;
     case 4:
@@ -731,11 +739,10 @@ proto.simpledrive.ItemCreateRequest.serializeBinaryToWriter = function(message, 
     );
   }
   f = message.getParentId();
-  if (f != null) {
-    writer.writeMessage(
+  if (f.length > 0) {
+    writer.writeString(
       3,
-      f,
-      google_protobuf_wrappers_pb.StringValue.serializeBinaryToWriter
+      f
     );
   }
   f = message.getFile_asU8();
@@ -785,39 +792,20 @@ proto.simpledrive.ItemCreateRequest.prototype.setType = function(value) {
 
 
 /**
- * optional google.protobuf.StringValue parent_id = 3;
- * @return {?proto.google.protobuf.StringValue}
+ * optional string parent_id = 3;
+ * @return {string}
  */
 proto.simpledrive.ItemCreateRequest.prototype.getParentId = function() {
-  return /** @type{?proto.google.protobuf.StringValue} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_wrappers_pb.StringValue, 3));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * @param {?proto.google.protobuf.StringValue|undefined} value
+ * @param {string} value
  * @return {!proto.simpledrive.ItemCreateRequest} returns this
-*/
+ */
 proto.simpledrive.ItemCreateRequest.prototype.setParentId = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.simpledrive.ItemCreateRequest} returns this
- */
-proto.simpledrive.ItemCreateRequest.prototype.clearParentId = function() {
-  return this.setParentId(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.simpledrive.ItemCreateRequest.prototype.hasParentId = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -896,7 +884,7 @@ proto.simpledrive.ItemUpdateRequest.prototype.toObject = function(opt_includeIns
 proto.simpledrive.ItemUpdateRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: (f = msg.getName()) && google_protobuf_wrappers_pb.StringValue.toObject(includeInstance, f),
-    parentId: (f = msg.getParentId()) && google_protobuf_wrappers_pb.StringValue.toObject(includeInstance, f)
+    parentId: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -939,8 +927,7 @@ proto.simpledrive.ItemUpdateRequest.deserializeBinaryFromReader = function(msg, 
       msg.setName(value);
       break;
     case 2:
-      var value = new google_protobuf_wrappers_pb.StringValue;
-      reader.readMessage(value,google_protobuf_wrappers_pb.StringValue.deserializeBinaryFromReader);
+      var value = /** @type {string} */ (reader.readString());
       msg.setParentId(value);
       break;
     default:
@@ -981,11 +968,10 @@ proto.simpledrive.ItemUpdateRequest.serializeBinaryToWriter = function(message, 
     );
   }
   f = message.getParentId();
-  if (f != null) {
-    writer.writeMessage(
+  if (f.length > 0) {
+    writer.writeString(
       2,
-      f,
-      google_protobuf_wrappers_pb.StringValue.serializeBinaryToWriter
+      f
     );
   }
 };
@@ -1029,39 +1015,20 @@ proto.simpledrive.ItemUpdateRequest.prototype.hasName = function() {
 
 
 /**
- * optional google.protobuf.StringValue parent_id = 2;
- * @return {?proto.google.protobuf.StringValue}
+ * optional string parent_id = 2;
+ * @return {string}
  */
 proto.simpledrive.ItemUpdateRequest.prototype.getParentId = function() {
-  return /** @type{?proto.google.protobuf.StringValue} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_wrappers_pb.StringValue, 2));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * @param {?proto.google.protobuf.StringValue|undefined} value
+ * @param {string} value
  * @return {!proto.simpledrive.ItemUpdateRequest} returns this
-*/
+ */
 proto.simpledrive.ItemUpdateRequest.prototype.setParentId = function(value) {
-  return jspb.Message.setWrapperField(this, 2, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.simpledrive.ItemUpdateRequest} returns this
- */
-proto.simpledrive.ItemUpdateRequest.prototype.clearParentId = function() {
-  return this.setParentId(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.simpledrive.ItemUpdateRequest.prototype.hasParentId = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 

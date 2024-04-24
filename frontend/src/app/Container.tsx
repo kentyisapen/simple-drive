@@ -1,5 +1,4 @@
 // src/app/Container.tsx
-"use client";
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { fetchItems } from "../store/itemSlice";
@@ -10,23 +9,37 @@ const Container = () => {
 	const dispatch = useAppDispatch();
 	const { items, loading, error } = useAppSelector((state) => state.item);
 
-	const [selectedItem, setSelectedItem] = useState<null | Item.AsObject>(null)
-	const [modalIsOpened, setIsModalOpened] = useState(false)
+	const [selectedItem, setSelectedItem] = useState<null | Item.AsObject>(null);
+	const [modalIsOpened, setIsModalOpened] = useState(false);
 
 	const handleOnClickItem = (item: Item.AsObject) => {
-		setSelectedItem(item)
-		setIsModalOpened(true)
-	}
+		setSelectedItem(item);
+		setIsModalOpened(true);
+	};
 
 	const handleOnClose = () => {
-		setIsModalOpened(false)
-	}
+		setIsModalOpened(false);
+	};
 
 	useEffect(() => {
+		console.log("t2");
 		dispatch(fetchItems());
-	}, [dispatch]);
+	}, []);
 
-	return <Presenter items={items} loading={loading} error={error} selectedItem={selectedItem} isModalOpened={modalIsOpened} setIsModalOpened={setIsModalOpened} handleOnClickItem={handleOnClickItem} handleOnClose={handleOnClose} />;
+	console.log("t3");
+
+	return (
+		<Presenter
+			items={items}
+			loading={loading}
+			error={error}
+			selectedItem={selectedItem}
+			isModalOpened={modalIsOpened}
+			setIsModalOpened={setIsModalOpened}
+			handleOnClickItem={handleOnClickItem}
+			handleOnClose={handleOnClose}
+		/>
+	);
 };
 
 export default Container;
